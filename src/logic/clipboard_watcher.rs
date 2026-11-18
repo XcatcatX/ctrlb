@@ -15,21 +15,14 @@ struct WatcherContext {
     history: SharedHistory,
     last_text: SharedLastText,
     file_path: PathBuf,
-    on_change: Box<dyn Fn(&str) + Send>,
 }
 
-// Starts a thread that checks the clipboard. on_change gets every new text.
-pub fn start(
-    history: SharedHistory,
-    last_text: SharedLastText,
-    file_path: PathBuf,
-    on_change: impl Fn(&str) + Send + 'static,
-) {
+// Starts a thread that checks the clipboard and saves every new text
+pub fn start(history: SharedHistory, last_text: SharedLastText, file_path: PathBuf) {
     let context = WatcherContext {
         history,
         last_text,
         file_path,
-        on_change: Box::new(on_change),
     };
     thread::spawn(move || run_loop(context));
 }
@@ -51,25 +44,18 @@ fn run_loop(context: WatcherContext) {
             return;
         }
     };
-    // Text that is already in the clipboard at start is saved, but not printed
-    if let Ok(text) = clipboard.get_text() {
-        handle_text(&context, text, false);
-    }
     loop {
         // Errors happen when the clipboard has no text (e.g. an image). Ignore them.
         if let Ok(text) = clipboard.get_text() {
-            handle_text(&context, text, true);
+            handle_text(&context, text);
         }
         thread::sleep(theme::CLIPBOARD_POLL_INTERVAL);
     }
 }
 
-fn handle_text(context: &WatcherContext, text: String, print_it: bool) {
+fn handle_text(context: &WatcherContext, text: String) {
     if text.trim().is_empty() || !remember_if_new(&context.last_text, &text) {
         return;
-    }
-    if print_it {
-        (context.on_change)(&text);
     }
     add_to_history(context, text);
 }

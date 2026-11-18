@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use eframe::egui;
+use tray_icon::TrayIcon;
 
 use crate::logic::clipboard_watcher::{self, SharedLastText};
 use crate::logic::history_file;
@@ -9,17 +10,20 @@ use crate::logic::history_list::{HistoryList, SharedHistory};
 use crate::logic::hotkey_watcher;
 use crate::logic::menu_selection::{MenuSelection, SharedMenu};
 use crate::theme;
-use crate::ui::{overlay_view, terminal_view};
+use crate::ui::{overlay_view, tray_menu};
 
 pub struct ClipboardApp {
     history: SharedHistory,
     menu: SharedMenu,
     // None = unknown (first frame), so the window state is always set once
     window_shown: Option<bool>,
+    // Must stay alive, otherwise the tray icon disappears
+    _tray_icon: TrayIcon,
 }
 
 impl ClipboardApp {
-    pub fn new(ctx: &egui::Context) -> Self {
+    pub fn new(ctx: &egui::Context) -> Result<Self, String> {
+        let tray_icon = tray_menu::create(ctx)?;
         let file_path = history_file::default_path();
         let history = load_history(&file_path);
         let menu: SharedMenu = Arc::new(Mutex::new(MenuSelection::default()));
@@ -28,11 +32,12 @@ impl ClipboardApp {
         start_clipboard_watcher(&history, &last_text, file_path);
         start_hotkey_watcher(ctx, &history, &menu, &last_text);
 
-        Self {
+        Ok(Self {
             history,
             menu,
             window_shown: None,
-        }
+            _tray_icon: tray_icon,
+        })
     }
 
     fn read_menu_state(&self) -> (bool, usize) {
@@ -97,12 +102,7 @@ fn load_history(file_path: &PathBuf) -> SharedHistory {
 }
 
 fn start_clipboard_watcher(history: &SharedHistory, last_text: &SharedLastText, file_path: PathBuf) {
-    clipboard_watcher::start(
-        Arc::clone(history),
-        Arc::clone(last_text),
-        file_path,
-        terminal_view::print_new_entry,
-    );
+    clipboard_watcher::start(Arc::clone(history), Arc::clone(last_text), file_path);
 }
 
 fn start_hotkey_watcher(

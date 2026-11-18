@@ -3,7 +3,7 @@ use std::time::Duration;
 use eframe::egui::Color32;
 
 // Name
-pub const APP_NAME: &str = "ctrlbn";
+pub const APP_NAME: &str = "ctrlb";
 
 // Menu window
 pub const MENU_WIDTH: f32 = 420.0;
@@ -20,6 +20,11 @@ pub const MENU_BACKGROUND: Color32 = Color32::from_rgba_premultiplied(35, 35, 35
 pub const TEXT_COLOR: Color32 = Color32::from_gray(225);
 pub const COUNTER_COLOR: Color32 = Color32::from_gray(150);
 
+// Tray icon (grey, drawn in code)
+pub const TRAY_ICON_SIZE: u32 = 32;
+pub const TRAY_ICON_DARK: [u8; 4] = [50, 50, 50, 255];
+pub const TRAY_ICON_LIGHT: [u8; 4] = [225, 225, 225, 255];
+
 // Font sizes
 pub const MENU_FONT_SIZE: f32 = 16.0;
 pub const COUNTER_FONT_SIZE: f32 = 13.0;
@@ -31,9 +36,6 @@ pub const MENU_MAX_CHARS: usize = 280;
 // History
 pub const MAX_HISTORY_ENTRIES: usize = 50;
 pub const HISTORY_FILE_NAME: &str = "clipboard_history.txt";
-
-// Terminal
-pub const TERMINAL_MAX_CHARS: usize = 60;
 
 // Timing
 pub const CLIPBOARD_POLL_INTERVAL: Duration = Duration::from_millis(500);

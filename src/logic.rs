@@ -1,5 +1,7 @@
-pub mod clipboard_watcher;
-pub mod history_file;
-pub mod history_list;
-pub mod hotkey_watcher;
-pub mod menu_selection;
+pub mod file_ops;
+pub mod folder_listing;
+pub mod link_resolver;
+pub mod pin_store;
+pub mod safe_paths;
+pub mod shortcut_reader;
+pub mod zip_builder;

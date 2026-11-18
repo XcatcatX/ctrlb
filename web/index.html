@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datei-Browser</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="logo">D</span><span>Datei-Browser</span></div>
+    <p class="side-title">Navigation</p>
+    <button type="button" class="side-link" id="nav-root">Files</button>
+    <p class="side-title">Folders</p>
+    <div id="side-folders"></div>
+  </aside>
+  <div class="side-backdrop" id="side-backdrop" hidden></div>
+
+  <div class="content">
+    <header class="page-head">
+      <button type="button" class="menu-button" id="btn-menu">Menu</button>
+      <div class="head-title">
+        <h1 id="page-title">Files</h1>
+        <p class="muted" id="page-subtitle"></p>
+      </div>
+      <div class="actions">
+        <button type="button" class="primary" id="btn-upload-files">Upload files</button>
+        <button type="button" id="btn-upload-folder">Upload folder</button>
+        <button type="button" id="btn-new-folder">New folder</button>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="card" id="pinned-section" hidden>
+        <div class="card-head">
+          <h2>Pinned</h2>
+          <span class="pill" id="pinned-count"></span>
+        </div>
+        <ul class="file-list" id="pinned-list"></ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <nav class="breadcrumb" id="breadcrumb" aria-label="Path"></nav>
+          <span class="pill" id="item-count"></span>
+        </div>
+        <div class="row row-head">
+          <span>Name</span>
+          <span class="size">Size</span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <ul class="file-list" id="file-list"></ul>
+        <p class="empty muted" id="empty-message" hidden>This folder is empty.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="drop-overlay" hidden>Drop files or folders to upload</div>
+<div id="popup-layer" hidden></div>
+
+<input type="file" id="file-input" multiple hidden>
+<input type="file" id="folder-input" webkitdirectory hidden>
+<form id="zip-form" method="post" action="/api/zip" hidden>
+  <input type="hidden" name="paths" id="zip-paths">
+</form>
+
+<script type="module" src="/script.js"></script>
+</body>
+</html>

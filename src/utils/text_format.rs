@@ -1,10 +1,3 @@
-// One line, extra spaces and line breaks removed, cut after max_chars
-pub fn one_line_preview(text: &str, max_chars: usize) -> String {
-    let single_line = text.split_whitespace().collect::<Vec<_>>().join(" ");
-    let (shortened, was_cut) = cut_chars(&single_line, max_chars);
-    add_dots_if_cut(shortened, was_cut)
-}
-
 // Keeps line breaks, but only the first lines and the first characters
 pub fn shorten_for_menu(text: &str, max_lines: usize, max_chars: usize) -> String {
     let mut lines = text.lines();

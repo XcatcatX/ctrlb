@@ -17,21 +17,21 @@ struct HotkeyContext {
 #[derive(Default, Clone, Copy)]
 struct KeyState {
     ctrl: bool,
+    shift: bool,
     key_b: bool,
-    key_n: bool,
 }
 
 impl KeyState {
     fn from_keys(keys: &[Keycode]) -> Self {
         Self {
             ctrl: keys.contains(&Keycode::LControl) || keys.contains(&Keycode::RControl),
+            shift: keys.contains(&Keycode::LShift) || keys.contains(&Keycode::RShift),
             key_b: keys.contains(&Keycode::B),
-            key_n: keys.contains(&Keycode::N),
         }
     }
 }
 
-// Starts a thread that watches Ctrl+B, Ctrl+N and the release of Ctrl.
+// Starts a thread that watches Ctrl+B, Ctrl+Shift+B and the release of Ctrl.
 // wake_ui is called whenever the menu changed.
 pub fn start(
     history: SharedHistory,
@@ -59,16 +59,13 @@ fn run_loop(context: HotkeyContext) {
     }
 }
 
-// Ctrl+N = next older entry, Ctrl+B = next newer entry
+// Ctrl+B = next older entry, Ctrl+Shift+B = next newer entry
 fn handle_key_change(context: &HotkeyContext, previous: KeyState, current: KeyState) {
-    let n_pressed = current.key_n && !previous.key_n;
     let b_pressed = current.key_b && !previous.key_b;
     let ctrl_released = previous.ctrl && !current.ctrl;
 
-    if current.ctrl && n_pressed {
-        move_menu(context, true);
-    } else if current.ctrl && b_pressed {
-        move_menu(context, false);
+    if current.ctrl && b_pressed {
+        move_menu(context, !current.shift);
     } else if ctrl_released {
         close_menu_and_copy(context);
     }
